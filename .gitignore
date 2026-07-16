@@ -23,6 +23,7 @@ out/
 coverage/
 *.tsbuildinfo
 .playwright-cli/
+output/
 
 # Android / Gradle
 .gradle/

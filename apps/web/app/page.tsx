@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const surfaces = [
-  { name: "用户网页端", status: "M4 after-sales tracking", accent: "bg-commerce-red" },
-  { name: "商家后台", status: "M4 service queue", accent: "bg-commerce-teal" },
-  { name: "管理员后台", status: "M4 work orders", accent: "bg-commerce-gold" }
+  { name: "用户网页端", status: "M5 regression ready", accent: "bg-commerce-red" },
+  { name: "商家后台", status: "M5 service queue checks", accent: "bg-commerce-teal" },
+  { name: "管理员后台", status: "M5 work order checks", accent: "bg-commerce-gold" }
 ];
 
 export default function HomePage() {
@@ -12,12 +12,12 @@ export default function HomePage() {
       <section className="mx-auto flex max-w-6xl flex-col gap-8">
         <header className="flex flex-col gap-3 border-b border-slate-200 pb-6">
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-commerce-red">
-            M4 After-Sales Workflow
+            M5 Hardening Launch
           </p>
           <h1 className="text-3xl font-semibold">Commerce Platform</h1>
           <p className="max-w-3xl text-base leading-7 text-slate-600">
-            当前阶段已扩展售后退款、商家审核、客服介入和工单处理，
-            并让用户端、商家后台、管理员后台围绕同一售后状态机协同。
+            当前阶段聚焦稳定化发布，围绕身份权限、商品库存、订单支付、
+            售后工单、安全审计和多端页面做全量回归。
           </p>
         </header>
 

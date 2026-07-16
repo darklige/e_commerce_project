@@ -2,7 +2,7 @@
 
 一个类京东的大型多端电商平台，采用 FastAPI + PostgreSQL + React/Next.js/Tailwind CSS + Android 的前后端分离架构。
 
-当前阶段：M4 售后、商家后台、管理员后台。
+当前阶段：M5 稳定化与发布。
 
 ## 项目结构
 
@@ -46,7 +46,7 @@ Android：
 
 当前仓库包含 Android/Compose 工程骨架。需要安装 Android CLI、JDK 和 Gradle 后再进行本地构建验证。
 
-## M4 功能入口
+## M5 功能入口与验证
 
 API：
 
@@ -79,13 +79,16 @@ Web：
 
 当前 M4 售后策略：使用模拟退款，不接真实渠道；仅退款支持已支付未发货订单，退货退款要求已发货待收货或已完成订单。商家审核、用户退货、商家收货、客服介入、退款失败重试和超时推进均通过状态机、幂等键与审计日志串联；管理员权限拆分为售后只读、客服裁定、财务退款重试和主管超时任务。真实支付渠道、完整物流轨迹和大额财务复核流留到后续阶段深化。
 
+当前 M5 稳定化策略：保留模拟支付/退款和 demo-data Web 页面，重点补齐安全威胁模型、发布回滚文档、M5 回归清单、API 全链路 E2E、安全硬化测试和 Playwright CLI 页面烟测。
+
 本地回归：
 
 ```bash
 ./scripts/verify-m0.sh
+./scripts/verify-m5.sh
 ```
 
-该脚本当前覆盖 API Ruff/pytest/Alembic SQL、Web lint/type/build、Android lint/test/assembleDebug。
+`verify-m0.sh` 覆盖 API Ruff/pytest/Alembic SQL、Web lint/type/build、Android lint/test/assembleDebug，其中 API pytest 包含 `tests/test_m5_e2e.py` 的用户-商家-管理员全链路回归。`verify-m5.sh` 在此基础上启动 Web dev server，并用 Playwright CLI 检查用户、商家、管理员关键页面。
 
 ## 协作规则
 
