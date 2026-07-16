@@ -9,13 +9,14 @@ uv sync --project "$ROOT_DIR/apps/api" --group dev
   cd "$ROOT_DIR/apps/api"
   uv run ruff check .
   uv run pytest
+  uv run alembic upgrade head --sql >/tmp/commerce-alembic-upgrade.sql
 )
 
 if command -v npm >/dev/null 2>&1; then
   echo "== Web checks =="
   cd "$ROOT_DIR/apps/web"
   if [ ! -d node_modules ]; then
-    npm install
+    npm ci
   fi
   npm run lint
   npm run typecheck

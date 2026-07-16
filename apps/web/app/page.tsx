@@ -1,7 +1,7 @@
 const surfaces = [
-  { name: "用户网页端", status: "M0 shell", accent: "bg-commerce-red" },
-  { name: "商家后台", status: "M0 shell", accent: "bg-commerce-teal" },
-  { name: "管理员后台", status: "M0 shell", accent: "bg-commerce-gold" }
+  { name: "用户网页端", status: "M1 identity ready", accent: "bg-commerce-red" },
+  { name: "商家后台", status: "M1 login shell", accent: "bg-commerce-teal" },
+  { name: "管理员后台", status: "M1 login shell", accent: "bg-commerce-gold" }
 ];
 
 export default function HomePage() {
@@ -14,8 +14,8 @@ export default function HomePage() {
           </p>
           <h1 className="text-3xl font-semibold">Commerce Platform</h1>
           <p className="max-w-3xl text-base leading-7 text-slate-600">
-            多端电商平台基础工程已启动。当前页面用于验证 Next.js、Tailwind CSS
-            和多端入口规划，后续会逐步拆分用户端、商家后台、管理员后台工作台。
+            多端电商平台基础工程已启动。当前阶段聚焦账号、登录、RBAC 和审计，
+            并为商家后台与管理员后台准备独立入口。
           </p>
         </header>
 
@@ -35,4 +35,3 @@ export default function HomePage() {
     </main>
   );
 }
-
