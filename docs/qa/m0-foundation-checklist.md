@@ -54,10 +54,13 @@ curl http://localhost:8000/api/v1/health/ready
 Android：
 
 ```bash
-gradle -p apps/android :app:assembleDebug
+cd apps/android
+export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+./gradlew lint test assembleDebug
 ```
 
-当前开发机缺少 `android` CLI、Java Runtime 和 Gradle，因此 Android 构建在本地跳过。后续应在安装 JDK、Android SDK/CLI、Gradle 或 Gradle Wrapper 后补跑 `lint`、`test`、`assembleDebug`，并在 release 验收记录中附命令输出或 CI 链接。
+项目包含 Gradle Wrapper。若本机未安装全局 JDK，可使用 Android Studio 内置 JBR。构建前需要 Android SDK 35 或兼容版本。
 
 ## M0 通过标准
 
@@ -65,6 +68,5 @@ gradle -p apps/android :app:assembleDebug
 - Web lint、typecheck、production build 通过。
 - `npm audit --omit=dev` 无生产依赖漏洞。
 - Docker Compose 配置有效，PostgreSQL 和 API 能启动。
-- Android 骨架文件完整；若无法本地构建，必须清楚记录工具链限制。
+- Android 骨架文件完整，`./gradlew lint test assembleDebug` 通过。
 - README 能指导新协作者启动项目。
-

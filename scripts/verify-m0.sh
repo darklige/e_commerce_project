@@ -24,9 +24,18 @@ else
   echo "npm is not installed; skipping web checks"
 fi
 
-if command -v gradle >/dev/null 2>&1 && command -v java >/dev/null 2>&1; then
+ANDROID_STUDIO_JBR="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+
+if [ -x "$ROOT_DIR/apps/android/gradlew" ] && { java -version >/dev/null 2>&1 || [ -x "$ANDROID_STUDIO_JBR/bin/java" ]; }; then
   echo "== Android build =="
-  gradle -p "$ROOT_DIR/apps/android" :app:assembleDebug
+  export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
+  if ! java -version >/dev/null 2>&1 && [ -x "$ANDROID_STUDIO_JBR/bin/java" ]; then
+    export JAVA_HOME="$ANDROID_STUDIO_JBR"
+  fi
+  (
+    cd "$ROOT_DIR/apps/android"
+    ./gradlew lint test assembleDebug
+  )
 else
-  echo "Android build skipped: Gradle and/or Java Runtime is not installed"
+  echo "Android build skipped: Gradle Wrapper and Java Runtime are not available"
 fi
