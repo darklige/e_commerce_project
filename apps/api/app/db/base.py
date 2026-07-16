@@ -1,5 +1,11 @@
 from sqlmodel import SQLModel
 
+from app.domains.after_sales.models import (
+    AfterSalesEvent,
+    AfterSalesRequest,
+    Refund,
+    WorkOrder,
+)
 from app.domains.catalog.models import (
     Brand,
     Category,
@@ -18,6 +24,8 @@ from app.domains.order.models import (
 )
 
 __all__ = [
+    "AfterSalesEvent",
+    "AfterSalesRequest",
     "AuditLog",
     "Brand",
     "CartItem",
@@ -28,9 +36,11 @@ __all__ = [
     "OrderStatusEvent",
     "Payment",
     "Product",
+    "Refund",
     "SQLModel",
     "Sku",
     "SkuInventory",
     "User",
     "UserRole",
+    "WorkOrder",
 ]

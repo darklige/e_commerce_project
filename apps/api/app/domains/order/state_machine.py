@@ -10,7 +10,12 @@ TRANSITIONS: dict[OrderStatus, set[OrderStatus]] = {
         OrderStatus.PAID_PENDING_SHIPMENT,
         OrderStatus.CLOSED,
     },
-    OrderStatus.PAID_PENDING_SHIPMENT: set(),
+    OrderStatus.PAID_PENDING_SHIPMENT: {
+        OrderStatus.SHIPPED_AWAITING_RECEIPT,
+        OrderStatus.CLOSED,
+    },
+    OrderStatus.SHIPPED_AWAITING_RECEIPT: {OrderStatus.COMPLETED},
+    OrderStatus.COMPLETED: set(),
     OrderStatus.CLOSED: set(),
 }
 

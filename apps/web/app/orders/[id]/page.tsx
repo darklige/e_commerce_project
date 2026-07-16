@@ -88,12 +88,20 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               模拟支付
             </Link>
           ) : (
-            <Link
-              className="mt-5 block rounded-md border border-commerce-teal px-5 py-3 text-center text-sm font-semibold text-commerce-teal"
-              href="/products"
-            >
-              再逛逛
-            </Link>
+            <div className="mt-5 grid gap-3">
+              <Link
+                className="block rounded-md bg-commerce-red px-5 py-3 text-center text-sm font-semibold text-white"
+                href="/after-sales"
+              >
+                申请售后
+              </Link>
+              <Link
+                className="block rounded-md border border-commerce-teal px-5 py-3 text-center text-sm font-semibold text-commerce-teal"
+                href="/products"
+              >
+                再逛逛
+              </Link>
+            </div>
           )}
         </aside>
       </section>

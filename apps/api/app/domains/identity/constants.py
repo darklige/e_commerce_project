@@ -32,6 +32,11 @@ class Permission(StrEnum):
     MERCHANT_CONSOLE_ACCESS = "merchant:console:access"
     CART_MANAGE = "cart:manage"
     ORDER_MANAGE = "order:manage"
+    AFTER_SALES_MANAGE = "after_sales:manage"
+    AFTER_SALES_READ = "after_sales:read"
+    AFTER_SALES_DECIDE = "after_sales:decide"
+    AFTER_SALES_REFUND_RETRY = "after_sales:refund:retry"
+    AFTER_SALES_AUTO_PROGRESS = "after_sales:auto_progress"
     CATALOG_MANAGE = "catalog:manage"
     PRODUCT_MANAGE = "product:manage"
     INVENTORY_MANAGE = "inventory:manage"
@@ -64,16 +69,19 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.USER_PROFILE_READ,
         Permission.CART_MANAGE,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_MANAGE,
     },
     Role.MEMBER_CUSTOMER: {
         Permission.USER_PROFILE_READ,
         Permission.CART_MANAGE,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_MANAGE,
     },
     Role.ENTERPRISE_CUSTOMER: {
         Permission.USER_PROFILE_READ,
         Permission.CART_MANAGE,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_MANAGE,
     },
     Role.MERCHANT_OWNER: {
         Permission.USER_PROFILE_READ,
@@ -81,6 +89,7 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.PRODUCT_MANAGE,
         Permission.INVENTORY_MANAGE,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_MANAGE,
         Permission.RBAC_MANAGE,
     },
     Role.MERCHANT_PRODUCT_OPERATOR: {
@@ -93,6 +102,7 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.USER_PROFILE_READ,
         Permission.MERCHANT_CONSOLE_ACCESS,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_MANAGE,
     },
     Role.MERCHANT_WAREHOUSE: {
         Permission.USER_PROFILE_READ,
@@ -111,6 +121,11 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.PRODUCT_MANAGE,
         Permission.INVENTORY_MANAGE,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_MANAGE,
+        Permission.AFTER_SALES_READ,
+        Permission.AFTER_SALES_DECIDE,
+        Permission.AFTER_SALES_REFUND_RETRY,
+        Permission.AFTER_SALES_AUTO_PROGRESS,
         Permission.AUDIT_READ,
         Permission.RBAC_MANAGE,
     },
@@ -120,27 +135,37 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.CATALOG_MANAGE,
         Permission.PRODUCT_MANAGE,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_READ,
     },
     Role.ADMIN_CUSTOMER_SERVICE: {
         Permission.USER_PROFILE_READ,
         Permission.ADMIN_CONSOLE_ACCESS,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_READ,
+        Permission.AFTER_SALES_DECIDE,
     },
     Role.ADMIN_CUSTOMER_SERVICE_LEAD: {
         Permission.USER_PROFILE_READ,
         Permission.ADMIN_CONSOLE_ACCESS,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_READ,
+        Permission.AFTER_SALES_DECIDE,
+        Permission.AFTER_SALES_AUTO_PROGRESS,
         Permission.AUDIT_READ,
     },
     Role.ADMIN_RISK: {
         Permission.USER_PROFILE_READ,
         Permission.ADMIN_CONSOLE_ACCESS,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_READ,
+        Permission.AFTER_SALES_DECIDE,
     },
     Role.ADMIN_FINANCE: {
         Permission.USER_PROFILE_READ,
         Permission.ADMIN_CONSOLE_ACCESS,
         Permission.ORDER_MANAGE,
+        Permission.AFTER_SALES_READ,
+        Permission.AFTER_SALES_REFUND_RETRY,
     },
     Role.ADMIN_TECH: {
         Permission.USER_PROFILE_READ,
