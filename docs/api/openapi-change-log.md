@@ -1,5 +1,51 @@
 # OpenAPI Change Log
 
+## 2026-07-16 - M4 After-Sales Merchant Admin
+
+新增用户售后接口：
+
+- `POST /api/v1/after-sales`
+- `GET /api/v1/after-sales`
+- `GET /api/v1/after-sales/{after_sales_id}`
+- `POST /api/v1/after-sales/{after_sales_id}/supplements`
+- `POST /api/v1/after-sales/{after_sales_id}/return-shipment`
+- `POST /api/v1/after-sales/{after_sales_id}/escalate`
+- `POST /api/v1/after-sales/{after_sales_id}/cancel`
+
+新增商家售后接口：
+
+- `GET /api/v1/merchant/after-sales`
+- `GET /api/v1/merchant/after-sales/{after_sales_id}`
+- `POST /api/v1/merchant/after-sales/{after_sales_id}/approve`
+- `POST /api/v1/merchant/after-sales/{after_sales_id}/reject`
+- `POST /api/v1/merchant/after-sales/{after_sales_id}/confirm-receipt`
+
+新增管理员客服与退款接口：
+
+- `GET /api/v1/admin/after-sales`
+- `GET /api/v1/admin/after-sales/{after_sales_id}`
+- `POST /api/v1/admin/after-sales/{after_sales_id}/decide`
+- `POST /api/v1/admin/after-sales/{after_sales_id}/retry-refund`
+- `POST /api/v1/admin/after-sales/auto-progress`
+- `GET /api/v1/admin/work-orders`
+
+权限变更：
+
+- 新增 `after_sales:manage`、`after_sales:read`、`after_sales:decide`、`after_sales:refund:retry`、`after_sales:auto_progress`。
+- 普通用户可处理本人售后。
+- 商家店主和订单客服可按 `merchant_ids` 处理本店售后。
+- 平台运营、客服、风控、财务和超级管理员可读售后/工单。
+- 平台客服、客服主管、风控和超级管理员可裁定售后；财务和超级管理员可重试退款失败；客服主管和超级管理员可运行超时推进任务。
+
+状态与资金：
+
+- 售后状态包含 `merchant_review`、`rejected`、`waiting_buyer_return`、`waiting_merchant_receipt`、`refunding`、`refunded`、`refund_failed`、`customer_service`、`closed`。
+- 退款状态包含 `pending`、`succeeded`、`failed`、`manual_review`。
+- 售后创建使用 `customer_id + idempotency_key` 幂等。
+- 用户补证、退货物流、撤销、商家审核、商家确认收货、客服裁定、财务退款重试均要求 `idempotency_key`，同一售后单复用同一 key 到不同动作会返回冲突。
+- M4 使用模拟退款；退款成功、失败、重试和客服裁定均写售后事件与审计日志，退款请求使用稳定幂等键避免重复退款语义。
+- 订单状态在 M4 预留 `shipped_awaiting_receipt`、`completed`；仅退款可从 `paid_pending_shipment` 发起，退货退款要求 `shipped_awaiting_receipt` 或 `completed`。
+
 ## 2026-07-16 - M3 Cart Order And Simulated Payment
 
 新增用户购物车接口：

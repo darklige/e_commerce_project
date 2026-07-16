@@ -17,9 +17,10 @@ export default function MerchantProductsPage() {
             <p className="text-sm font-semibold text-commerce-teal">商家后台</p>
             <h1 className="mt-1 text-2xl font-semibold">商品与库存管理</h1>
           </div>
-          <Link className="text-sm font-semibold text-commerce-teal" href="/merchant/login">
-            商家登录
-          </Link>
+          <div className="flex gap-4 text-sm font-semibold text-commerce-teal">
+            <Link href="/merchant/after-sales">售后处理队列</Link>
+            <Link href="/merchant/login">商家登录</Link>
+          </div>
         </header>
 
         <div className="grid gap-4 md:grid-cols-4">

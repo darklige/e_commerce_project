@@ -17,6 +17,8 @@ def default_order_expires_at() -> datetime:
 class OrderStatus(StrEnum):
     PENDING_PAYMENT = "pending_payment"
     PAID_PENDING_SHIPMENT = "paid_pending_shipment"
+    SHIPPED_AWAITING_RECEIPT = "shipped_awaiting_receipt"
+    COMPLETED = "completed"
     CLOSED = "closed"
 
 

@@ -73,6 +73,29 @@
 | `GET /api/v1/admin/orders/{order_id}` | 是 | `order:manage` | 管理员账号 |
 | `POST /api/v1/admin/orders/expire-unpaid` | 是 | `order:manage` | 管理员账号，系统任务型敏感操作 |
 
+## M4 售后、商家后台、管理员后台 API 权限映射
+
+| API | 认证 | 需要权限 | 数据范围 |
+|---|---|---|---|
+| `POST /api/v1/after-sales` | 是 | `after_sales:manage` | 当前普通用户、本人已支付订单行 |
+| `GET /api/v1/after-sales` | 是 | `after_sales:manage` | 当前普通用户售后 |
+| `GET /api/v1/after-sales/{after_sales_id}` | 是 | `after_sales:manage` | 禁止查看他人售后 |
+| `POST /api/v1/after-sales/{after_sales_id}/supplements` | 是 | `after_sales:manage` | 当前普通用户，补充凭证 |
+| `POST /api/v1/after-sales/{after_sales_id}/return-shipment` | 是 | `after_sales:manage` | 当前普通用户，待买家退货状态 |
+| `POST /api/v1/after-sales/{after_sales_id}/escalate` | 是 | `after_sales:manage` | 当前普通用户，生成/关联客服工单 |
+| `POST /api/v1/after-sales/{after_sales_id}/cancel` | 是 | `after_sales:manage` | 当前普通用户，未退款前可撤销 |
+| `GET /api/v1/merchant/after-sales` | 是 | `after_sales:manage` | 当前商家 `merchant_ids` |
+| `GET /api/v1/merchant/after-sales/{after_sales_id}` | 是 | `after_sales:manage` | 禁止跨商家 |
+| `POST /api/v1/merchant/after-sales/{after_sales_id}/approve` | 是 | `after_sales:manage` | 当前商家，写审核原因 |
+| `POST /api/v1/merchant/after-sales/{after_sales_id}/reject` | 是 | `after_sales:manage` | 当前商家，写拒绝原因 |
+| `POST /api/v1/merchant/after-sales/{after_sales_id}/confirm-receipt` | 是 | `after_sales:manage` | 当前商家，确认退货收货 |
+| `GET /api/v1/admin/after-sales` | 是 | `after_sales:read` | 平台运营/客服/风控/财务/超级管理员可读 |
+| `GET /api/v1/admin/after-sales/{after_sales_id}` | 是 | `after_sales:read` | 平台运营/客服/风控/财务/超级管理员可读 |
+| `POST /api/v1/admin/after-sales/{after_sales_id}/decide` | 是 | `after_sales:decide` | 平台客服/主管/风控/超级管理员，必须写裁定原因 |
+| `POST /api/v1/admin/after-sales/{after_sales_id}/retry-refund` | 是 | `after_sales:refund:retry` | 财务/超级管理员，退款失败后 |
+| `POST /api/v1/admin/after-sales/auto-progress` | 是 | `after_sales:auto_progress` | 客服主管/超级管理员，系统任务型敏感操作 |
+| `GET /api/v1/admin/work-orders` | 是 | `after_sales:read` | 平台运营/客服/风控/财务/超级管理员可读 |
+
 ## 审计要求
 
 - 登录成功和失败都要记录。
@@ -80,4 +103,5 @@
 - 权限拒绝要记录操作人、缺失权限、请求 IP、User-Agent。
 - 商品创建、商品修改、SKU 修改、上下架、库存调整、库存预留要记录操作人、对象和原因/参数。
 - 购物车写操作、订单创建、取消、模拟支付、支付超时关闭要记录操作人、对象、状态事件和原因。
-- 后续涉及退款、改价、客服裁决时必须记录前后状态、原因和凭证。
+- 售后创建、商家同意/拒绝、用户补证、退货物流、客服介入、客服裁定、退款失败重试、超时推进要记录操作人、对象、状态事件、原因和凭证。
+- 后续涉及改价、真实支付渠道退款和大额财务复核时必须记录前后状态、原因和凭证。
