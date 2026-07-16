@@ -31,9 +31,32 @@
 | `GET /api/v1/auth/admin/me` | 是 | `admin:console:access` |
 | `GET /api/v1/auth/merchant/me` | 是 | `merchant:console:access` |
 
+## M2 商品与库存 API 权限映射
+
+| API | 认证 | 需要权限 | 数据范围 |
+|---|---|---|---|
+| `GET /api/v1/categories` | 否 | 公开 | 仅返回启用类目 |
+| `GET /api/v1/brands` | 否 | 公开 | 仅返回启用品牌 |
+| `GET /api/v1/products` | 否 | 公开 | 仅返回已上架商品 |
+| `GET /api/v1/products/{product_id}` | 否 | 公开 | 未上架商品返回 `404` |
+| `POST /api/v1/admin/categories` | 是 | `catalog:manage` | 管理员账号 |
+| `POST /api/v1/admin/brands` | 是 | `catalog:manage` | 管理员账号 |
+| `GET /api/v1/merchant/products` | 是 | `product:manage` | 当前商家 `merchant_ids` |
+| `POST /api/v1/merchant/products` | 是 | `product:manage` | 当前商家 `merchant_ids` |
+| `GET /api/v1/merchant/products/{product_id}` | 是 | `product:manage` | 禁止跨商家 |
+| `PATCH /api/v1/merchant/products/{product_id}` | 是 | `product:manage` | 禁止跨商家 |
+| `POST /api/v1/merchant/products/{product_id}/skus` | 是 | `product:manage` | 禁止跨商家 |
+| `PATCH /api/v1/merchant/skus/{sku_id}` | 是 | `product:manage` | 禁止跨商家 |
+| `POST /api/v1/merchant/products/{product_id}/publish` | 是 | `product:manage` | 禁止跨商家 |
+| `POST /api/v1/merchant/products/{product_id}/unpublish` | 是 | `product:manage` | 禁止跨商家 |
+| `GET /api/v1/merchant/inventory` | 是 | `inventory:manage` | 当前商家 `merchant_ids` |
+| `POST /api/v1/merchant/inventory/adjustments` | 是 | `inventory:manage` | 禁止跨商家，写审计 |
+| `POST /api/v1/merchant/inventory/reservations` | 是 | `inventory:manage` | 禁止跨商家，幂等键防重复预留 |
+
 ## 审计要求
 
 - 登录成功和失败都要记录。
 - 注册成功和重复注册失败都要记录。
 - 权限拒绝要记录操作人、缺失权限、请求 IP、User-Agent。
+- 商品创建、商品修改、SKU 修改、上下架、库存调整、库存预留要记录操作人、对象和原因/参数。
 - 后续涉及退款、改价、关闭订单、客服裁决时必须记录前后状态、原因和凭证。

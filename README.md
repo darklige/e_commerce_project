@@ -2,7 +2,7 @@
 
 一个类京东的大型多端电商平台，采用 FastAPI + PostgreSQL + React/Next.js/Tailwind CSS + Android 的前后端分离架构。
 
-当前阶段：M0 基建。
+当前阶段：M2 商品与库存。
 
 ## 项目结构
 
@@ -30,7 +30,7 @@ Web：
 
 ```bash
 cd apps/web
-npm install
+npm ci
 npm run dev
 ```
 
@@ -45,6 +45,31 @@ Compose 默认将 PostgreSQL 暴露到 `localhost:55432`，避免和本机已有
 Android：
 
 当前仓库包含 Android/Compose 工程骨架。需要安装 Android CLI、JDK 和 Gradle 后再进行本地构建验证。
+
+## M2 功能入口
+
+API：
+
+- 公开浏览：`GET /api/v1/categories`、`GET /api/v1/brands`、`GET /api/v1/products`、`GET /api/v1/products/{id}`。
+- 商家商品：`POST /api/v1/merchant/products`、上下架、SKU 修改。
+- 商家库存：`GET /api/v1/merchant/inventory`、库存调整、幂等库存预留。
+- 管理员基础目录：`POST /api/v1/admin/categories`、`POST /api/v1/admin/brands`。
+
+Web：
+
+- 用户商品浏览：`/products`
+- 用户商品详情：`/products/northstar-x1`
+- 商家商品管理：`/merchant/products`
+
+当前 M2 审核策略：平台审核工作流暂不实现，商家调用 publish 后商品直接公开可售。后续 M4 会补平台运营审核和违规下架工作台。
+
+本地回归：
+
+```bash
+./scripts/verify-m0.sh
+```
+
+该脚本当前覆盖 API Ruff/pytest/Alembic SQL、Web lint/type/build、Android lint/test/assembleDebug。
 
 ## 协作规则
 

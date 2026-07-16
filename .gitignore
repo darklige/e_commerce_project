@@ -22,6 +22,7 @@ node_modules/
 out/
 coverage/
 *.tsbuildinfo
+.playwright-cli/
 
 # Android / Gradle
 .gradle/
@@ -34,4 +35,3 @@ apps/android/build/
 # IDE
 .idea/
 .vscode/
-
