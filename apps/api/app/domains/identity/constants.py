@@ -30,6 +30,9 @@ class Permission(StrEnum):
     USER_PROFILE_READ = "user:profile:read"
     ADMIN_CONSOLE_ACCESS = "admin:console:access"
     MERCHANT_CONSOLE_ACCESS = "merchant:console:access"
+    CATALOG_MANAGE = "catalog:manage"
+    PRODUCT_MANAGE = "product:manage"
+    INVENTORY_MANAGE = "inventory:manage"
     AUDIT_READ = "audit:read"
     RBAC_MANAGE = "rbac:manage"
 
@@ -61,11 +64,15 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
     Role.MERCHANT_OWNER: {
         Permission.USER_PROFILE_READ,
         Permission.MERCHANT_CONSOLE_ACCESS,
+        Permission.PRODUCT_MANAGE,
+        Permission.INVENTORY_MANAGE,
         Permission.RBAC_MANAGE,
     },
     Role.MERCHANT_PRODUCT_OPERATOR: {
         Permission.USER_PROFILE_READ,
         Permission.MERCHANT_CONSOLE_ACCESS,
+        Permission.PRODUCT_MANAGE,
+        Permission.INVENTORY_MANAGE,
     },
     Role.MERCHANT_ORDER_SUPPORT: {
         Permission.USER_PROFILE_READ,
@@ -74,6 +81,7 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
     Role.MERCHANT_WAREHOUSE: {
         Permission.USER_PROFILE_READ,
         Permission.MERCHANT_CONSOLE_ACCESS,
+        Permission.INVENTORY_MANAGE,
     },
     Role.MERCHANT_FINANCE: {
         Permission.USER_PROFILE_READ,
@@ -82,10 +90,18 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
     Role.ADMIN_SUPER: {
         Permission.USER_PROFILE_READ,
         Permission.ADMIN_CONSOLE_ACCESS,
+        Permission.CATALOG_MANAGE,
+        Permission.PRODUCT_MANAGE,
+        Permission.INVENTORY_MANAGE,
         Permission.AUDIT_READ,
         Permission.RBAC_MANAGE,
     },
-    Role.ADMIN_OPERATOR: {Permission.USER_PROFILE_READ, Permission.ADMIN_CONSOLE_ACCESS},
+    Role.ADMIN_OPERATOR: {
+        Permission.USER_PROFILE_READ,
+        Permission.ADMIN_CONSOLE_ACCESS,
+        Permission.CATALOG_MANAGE,
+        Permission.PRODUCT_MANAGE,
+    },
     Role.ADMIN_CUSTOMER_SERVICE: {
         Permission.USER_PROFILE_READ,
         Permission.ADMIN_CONSOLE_ACCESS,

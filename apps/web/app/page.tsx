@@ -1,6 +1,8 @@
+import Link from "next/link";
+
 const surfaces = [
-  { name: "用户网页端", status: "M1 identity ready", accent: "bg-commerce-red" },
-  { name: "商家后台", status: "M1 login shell", accent: "bg-commerce-teal" },
+  { name: "用户网页端", status: "M2 catalog browsing", accent: "bg-commerce-red" },
+  { name: "商家后台", status: "M2 product management", accent: "bg-commerce-teal" },
   { name: "管理员后台", status: "M1 login shell", accent: "bg-commerce-gold" }
 ];
 
@@ -14,8 +16,8 @@ export default function HomePage() {
           </p>
           <h1 className="text-3xl font-semibold">Commerce Platform</h1>
           <p className="max-w-3xl text-base leading-7 text-slate-600">
-            多端电商平台基础工程已启动。当前阶段聚焦账号、登录、RBAC 和审计，
-            并为商家后台与管理员后台准备独立入口。
+            多端电商平台基础工程已启动。当前阶段聚焦商品、SKU、库存预留和商家商品管理，
+            并保留账号、RBAC 和审计能力作为接口边界。
           </p>
         </header>
 
@@ -30,6 +32,15 @@ export default function HomePage() {
               <p className="mt-2 text-sm text-slate-600">{surface.status}</p>
             </article>
           ))}
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Link className="rounded-md bg-commerce-red px-4 py-3 text-sm font-semibold text-white" href="/products">
+            浏览商品
+          </Link>
+          <Link className="rounded-md bg-commerce-teal px-4 py-3 text-sm font-semibold text-white" href="/merchant/products">
+            商家商品管理
+          </Link>
         </div>
       </section>
     </main>
