@@ -19,6 +19,8 @@ jobs:
         run: uv run ruff check .
       - working-directory: apps/api
         run: uv run pytest
+      - working-directory: apps/api
+        run: uv run alembic upgrade head --sql >/tmp/alembic-upgrade.sql
 
   web:
     runs-on: ubuntu-latest
@@ -28,7 +30,7 @@ jobs:
         with:
           node-version: 22
       - working-directory: apps/web
-        run: npm install
+        run: npm ci
       - working-directory: apps/web
         run: npm run lint
       - working-directory: apps/web
