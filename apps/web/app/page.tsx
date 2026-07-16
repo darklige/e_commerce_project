@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const surfaces = [
-  { name: "用户网页端", status: "M2 catalog browsing", accent: "bg-commerce-red" },
-  { name: "商家后台", status: "M2 product management", accent: "bg-commerce-teal" },
-  { name: "管理员后台", status: "M1 login shell", accent: "bg-commerce-gold" }
+  { name: "用户网页端", status: "M3 shopping workflow", accent: "bg-commerce-red" },
+  { name: "商家后台", status: "M3 order visibility", accent: "bg-commerce-teal" },
+  { name: "管理员后台", status: "M3 order governance", accent: "bg-commerce-gold" }
 ];
 
 export default function HomePage() {
@@ -12,12 +12,12 @@ export default function HomePage() {
       <section className="mx-auto flex max-w-6xl flex-col gap-8">
         <header className="flex flex-col gap-3 border-b border-slate-200 pb-6">
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-commerce-red">
-            M0 Foundation
+            M3 Order Workflow
           </p>
           <h1 className="text-3xl font-semibold">Commerce Platform</h1>
           <p className="max-w-3xl text-base leading-7 text-slate-600">
-            多端电商平台基础工程已启动。当前阶段聚焦商品、SKU、库存预留和商家商品管理，
-            并保留账号、RBAC 和审计能力作为接口边界。
+            当前阶段已串起商品浏览、购物车、结算、订单创建、库存锁定和模拟支付，
+            后端以订单状态机、幂等键、库存预留和审计日志保证核心交易链路一致。
           </p>
         </header>
 
@@ -37,6 +37,12 @@ export default function HomePage() {
         <div className="flex flex-wrap gap-3">
           <Link className="rounded-md bg-commerce-red px-4 py-3 text-sm font-semibold text-white" href="/products">
             浏览商品
+          </Link>
+          <Link className="rounded-md bg-commerce-ink px-4 py-3 text-sm font-semibold text-white" href="/cart">
+            购物车
+          </Link>
+          <Link className="rounded-md bg-commerce-gold px-4 py-3 text-sm font-semibold text-commerce-ink" href="/orders">
+            我的订单
           </Link>
           <Link className="rounded-md bg-commerce-teal px-4 py-3 text-sm font-semibold text-white" href="/merchant/products">
             商家商品管理

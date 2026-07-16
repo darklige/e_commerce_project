@@ -53,10 +53,31 @@
 | `POST /api/v1/merchant/inventory/adjustments` | 是 | `inventory:manage` | 禁止跨商家，写审计 |
 | `POST /api/v1/merchant/inventory/reservations` | 是 | `inventory:manage` | 禁止跨商家，幂等键防重复预留 |
 
+## M3 购物车、订单、模拟支付 API 权限映射
+
+| API | 认证 | 需要权限 | 数据范围 |
+|---|---|---|---|
+| `GET /api/v1/cart` | 是 | `cart:manage` | 当前普通用户 |
+| `POST /api/v1/cart/items` | 是 | `cart:manage` | 当前普通用户，只允许已上架 SKU |
+| `PATCH /api/v1/cart/items/{cart_item_id}` | 是 | `cart:manage` | 禁止修改他人购物车项 |
+| `DELETE /api/v1/cart/items/{cart_item_id}` | 是 | `cart:manage` | 禁止删除他人购物车项 |
+| `POST /api/v1/checkout/preview` | 是 | `order:manage` | 当前普通用户选中购物车项 |
+| `POST /api/v1/orders` | 是 | `order:manage` | 当前普通用户，幂等创建并锁库存 |
+| `GET /api/v1/orders` | 是 | `order:manage` | 当前普通用户订单 |
+| `GET /api/v1/orders/{order_id}` | 是 | `order:manage` | 禁止查看他人订单 |
+| `POST /api/v1/orders/{order_id}/cancel` | 是 | `order:manage` | 仅本人待支付订单 |
+| `POST /api/v1/orders/{order_id}/payments/simulated` | 是 | `order:manage` | 仅本人待支付订单，支付幂等 |
+| `GET /api/v1/merchant/orders` | 是 | `order:manage` | 当前商家 `merchant_ids` |
+| `GET /api/v1/merchant/orders/{order_id}` | 是 | `order:manage` | 禁止跨商家 |
+| `GET /api/v1/admin/orders` | 是 | `order:manage` | 管理员账号 |
+| `GET /api/v1/admin/orders/{order_id}` | 是 | `order:manage` | 管理员账号 |
+| `POST /api/v1/admin/orders/expire-unpaid` | 是 | `order:manage` | 管理员账号，系统任务型敏感操作 |
+
 ## 审计要求
 
 - 登录成功和失败都要记录。
 - 注册成功和重复注册失败都要记录。
 - 权限拒绝要记录操作人、缺失权限、请求 IP、User-Agent。
 - 商品创建、商品修改、SKU 修改、上下架、库存调整、库存预留要记录操作人、对象和原因/参数。
-- 后续涉及退款、改价、关闭订单、客服裁决时必须记录前后状态、原因和凭证。
+- 购物车写操作、订单创建、取消、模拟支付、支付超时关闭要记录操作人、对象、状态事件和原因。
+- 后续涉及退款、改价、客服裁决时必须记录前后状态、原因和凭证。

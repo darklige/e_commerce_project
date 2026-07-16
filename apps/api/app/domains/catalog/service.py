@@ -335,6 +335,8 @@ def reserve_inventory(
     session: Session,
     merchant_id: UUID,
     payload: InventoryReservationRequest,
+    *,
+    commit: bool = True,
 ) -> tuple[InventoryReservation, int]:
     sku = require_sku(session, payload.sku_id, merchant_id=merchant_id)
     existing = session.exec(
@@ -374,9 +376,96 @@ def reserve_inventory(
         status=ReservationStatus.RESERVED,
     )
     session.add(reservation)
-    commit_or_conflict(session, "idempotency key already exists")
+    if commit:
+        commit_or_conflict(session, "idempotency key already exists")
+    else:
+        flush_or_conflict(session, "idempotency key already exists")
     inventory = require_inventory(session, sku.id, merchant_id=merchant_id)
     return reservation, inventory.on_hand - inventory.reserved
+
+
+def release_inventory_reservation(
+    session: Session,
+    reservation_id: UUID,
+    *,
+    commit: bool = True,
+) -> InventoryReservation:
+    reservation = session.get(InventoryReservation, reservation_id)
+    if reservation is None:
+        raise CatalogNotFoundError("inventory reservation not found")
+    if reservation.status == ReservationStatus.RELEASED:
+        return reservation
+    if reservation.status != ReservationStatus.RESERVED:
+        raise CatalogConflictError("only reserved inventory can be released")
+
+    result = session.exec(
+        update(SkuInventory)
+        .where(
+            SkuInventory.sku_id == reservation.sku_id,
+            SkuInventory.merchant_id == reservation.merchant_id,
+            SkuInventory.reserved >= reservation.quantity,
+        )
+        .values(
+            reserved=SkuInventory.reserved - reservation.quantity,
+            version=SkuInventory.version + 1,
+            updated_at=utc_now(),
+        )
+    )
+    if result.rowcount != 1:
+        session.rollback()
+        raise CatalogConflictError("reserved stock is inconsistent")
+
+    reservation.status = ReservationStatus.RELEASED
+    reservation.updated_at = utc_now()
+    session.add(reservation)
+    if commit:
+        session.commit()
+    else:
+        session.flush()
+    return reservation
+
+
+def consume_inventory_reservation(
+    session: Session,
+    reservation_id: UUID,
+    *,
+    commit: bool = True,
+) -> InventoryReservation:
+    reservation = session.get(InventoryReservation, reservation_id)
+    if reservation is None:
+        raise CatalogNotFoundError("inventory reservation not found")
+    if reservation.status == ReservationStatus.CONSUMED:
+        return reservation
+    if reservation.status != ReservationStatus.RESERVED:
+        raise CatalogConflictError("only reserved inventory can be consumed")
+
+    result = session.exec(
+        update(SkuInventory)
+        .where(
+            SkuInventory.sku_id == reservation.sku_id,
+            SkuInventory.merchant_id == reservation.merchant_id,
+            SkuInventory.on_hand >= reservation.quantity,
+            SkuInventory.reserved >= reservation.quantity,
+        )
+        .values(
+            on_hand=SkuInventory.on_hand - reservation.quantity,
+            reserved=SkuInventory.reserved - reservation.quantity,
+            version=SkuInventory.version + 1,
+            updated_at=utc_now(),
+        )
+    )
+    if result.rowcount != 1:
+        session.rollback()
+        raise CatalogConflictError("reserved stock is inconsistent")
+
+    reservation.status = ReservationStatus.CONSUMED
+    reservation.updated_at = utc_now()
+    session.add(reservation)
+    if commit:
+        session.commit()
+    else:
+        session.flush()
+    return reservation
 
 
 def create_sku_row(session: Session, product: Product, payload: SkuCreate) -> Sku:
@@ -505,6 +594,14 @@ def require_inventory(session: Session, sku_id: UUID, *, merchant_id: UUID) -> S
 def commit_or_conflict(session: Session, message: str) -> None:
     try:
         session.commit()
+    except IntegrityError as exc:
+        session.rollback()
+        raise CatalogConflictError(message) from exc
+
+
+def flush_or_conflict(session: Session, message: str) -> None:
+    try:
+        session.flush()
     except IntegrityError as exc:
         session.rollback()
         raise CatalogConflictError(message) from exc

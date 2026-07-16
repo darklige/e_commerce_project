@@ -31,9 +31,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <p className="text-sm font-semibold text-commerce-red">商品浏览</p>
             <h1 className="mt-1 text-2xl font-semibold">精选商品</h1>
           </div>
-          <Link className="text-sm font-semibold text-commerce-teal" href="/">
-            返回工作台
-          </Link>
+          <div className="flex gap-4 text-sm font-semibold text-commerce-teal">
+            <Link href="/cart">购物车</Link>
+            <Link href="/orders">我的订单</Link>
+            <Link href="/">工作台</Link>
+          </div>
         </header>
 
         <form className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4 md:grid-cols-[1fr_220px_96px]">
@@ -88,7 +90,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       className="rounded-md border border-commerce-teal px-3 py-2 text-sm font-semibold text-commerce-teal"
                       href={`/products/${product.id}`}
                     >
-                      查看
+                      选购
                     </Link>
                   </div>
                 </div>

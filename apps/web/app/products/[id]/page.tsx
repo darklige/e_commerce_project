@@ -65,6 +65,20 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             <p className="text-sm text-slate-600">
               当前商品总可售库存 {availableStock(product)}。库存不足或商品下架时，结算流程会重新校验价格和库存。
             </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                className="rounded-md bg-commerce-red px-4 py-3 text-sm font-semibold text-white"
+                href="/cart"
+              >
+                加入购物车
+              </Link>
+              <Link
+                className="rounded-md border border-commerce-teal px-4 py-3 text-sm font-semibold text-commerce-teal"
+                href="/checkout"
+              >
+                立即结算
+              </Link>
+            </div>
           </div>
         </div>
       </section>
