@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-commerce}
+      POSTGRES_USER: ${POSTGRES_USER:-commerce}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-commerce}
+    ports:
+      - "${POSTGRES_PORT:-55432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-commerce} -d ${POSTGRES_DB:-commerce}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - commerce_postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+    environment:
+      APP_ENV: docker
+      DATABASE_URL: postgresql+psycopg://commerce:commerce@postgres:5432/commerce
+      API_CORS_ORIGINS: http://localhost:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  commerce_postgres_data:
