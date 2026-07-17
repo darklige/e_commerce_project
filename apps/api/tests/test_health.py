@@ -38,6 +38,13 @@ def test_cors_rejects_wildcard_with_credentials() -> None:
         Settings(api_cors_origins="*")
 
 
+def test_local_cors_allows_loopback_web_hosts() -> None:
+    settings = Settings()
+
+    assert "http://localhost:3000" in settings.cors_origins
+    assert "http://127.0.0.1:3000" in settings.cors_origins
+
+
 def test_security_headers_are_set(client) -> None:
     response = client.get("/api/v1/health/live")
 

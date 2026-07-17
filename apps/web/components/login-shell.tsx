@@ -65,8 +65,6 @@ type LoginShellProps = {
   loginHref: string;
 };
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
-
 const audienceIcon = {
   用户: UserRound,
   商家: Store,
@@ -105,11 +103,21 @@ const adminRoleOptions: { label: string; value: AdminRole }[] = [
 ];
 
 async function postAuth<T>(path: string, body: Record<string, unknown>): Promise<T> {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${getApiBaseUrl()}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        "无法连接到后端 API。请确认 FastAPI 已启动，并检查 NEXT_PUBLIC_API_BASE_URL 或 API_CORS_ORIGINS 是否包含当前 Web 地址。"
+      );
+    }
+    throw error;
+  }
   const payload = (await response.json().catch(() => null)) as unknown;
 
   if (!response.ok) {
@@ -117,6 +125,17 @@ async function postAuth<T>(path: string, body: Record<string, unknown>): Promise
   }
 
   return payload as T;
+}
+
+function getApiBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  if (configured) {
+    return configured.replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined") {
+    return `${window.location.protocol}//${window.location.hostname}:8000/api/v1`;
+  }
+  return "http://localhost:8000/api/v1";
 }
 
 function readApiError(payload: unknown, status: number): string {
