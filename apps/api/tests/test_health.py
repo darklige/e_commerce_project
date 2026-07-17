@@ -25,6 +25,14 @@ def test_production_rejects_default_jwt_secret() -> None:
         Settings(app_env="production")
 
 
+def test_production_rejects_default_admin_invite_code() -> None:
+    with pytest.raises(ValidationError, match="ADMIN_REGISTRATION_INVITE_CODE"):
+        Settings(
+            app_env="production",
+            jwt_secret_key="production-test-secret-with-enough-entropy",
+        )
+
+
 def test_cors_rejects_wildcard_with_credentials() -> None:
     with pytest.raises(ValidationError, match="API_CORS_ORIGINS"):
         Settings(api_cors_origins="*")
@@ -48,6 +56,7 @@ def test_untrusted_host_is_rejected(client) -> None:
 def test_production_hides_api_schema(monkeypatch) -> None:
     monkeypatch.setenv("APP_ENV", "production")
     monkeypatch.setenv("JWT_SECRET_KEY", "production-test-secret-with-enough-entropy")
+    monkeypatch.setenv("ADMIN_REGISTRATION_INVITE_CODE", "prod-admin-invite-code")
     get_settings.cache_clear()
     production_app = create_app()
     get_settings.cache_clear()

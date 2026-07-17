@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "change-this-local-development-secret"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+    admin_registration_invite_code: str = "local-admin-invite-code"
     database_url: str = Field(
         default="postgresql+psycopg://commerce:commerce@localhost:55432/commerce"
     )
@@ -40,6 +41,11 @@ class Settings(BaseSettings):
             and self.jwt_secret_key == "change-this-local-development-secret"
         ):
             raise ValueError("JWT_SECRET_KEY must be configured for production")
+        if (
+            self.app_env == "production"
+            and self.admin_registration_invite_code == "local-admin-invite-code"
+        ):
+            raise ValueError("ADMIN_REGISTRATION_INVITE_CODE must be configured for production")
         return self
 
 

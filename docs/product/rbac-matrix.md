@@ -25,8 +25,13 @@
 
 | API | 认证 | 需要权限 |
 |---|---|---|
-| `POST /api/v1/auth/register` | 否 | 仅允许普通用户自注册 |
+| `POST /api/v1/auth/register` | 否 | 兼容旧入口，仅允许普通用户自注册，禁止额外 `account_type` |
+| `POST /api/v1/auth/register/customer` | 否 | 普通用户自助注册，自动分配 `customer` 角色 |
+| `POST /api/v1/auth/register/merchant` | 否 | 商家店主注册，自动生成 `merchant_ids` 数据范围并分配 `merchant_owner` |
+| `POST /api/v1/auth/register/admin` | 否 | 管理员邀请注册，必须提供平台邀请码，只允许非超级管理员的受限后台角色 |
 | `POST /api/v1/auth/login` | 否 | 按 `account_type` 区分用户/商家/管理员入口 |
+| `POST /api/v1/auth/password/forgot` | 否 | 按邮箱和 `account_type` 发起找回，统一返回 accepted，避免账号枚举 |
+| `POST /api/v1/auth/password/reset` | 否 | 按邮箱、`account_type`、一次性 token 重置密码，token 单次使用并过期失效 |
 | `GET /api/v1/auth/me` | 是 | `user:profile:read` |
 | `GET /api/v1/auth/admin/me` | 是 | `admin:console:access` |
 | `GET /api/v1/auth/merchant/me` | 是 | `merchant:console:access` |
@@ -100,6 +105,7 @@
 
 - 登录成功和失败都要记录。
 - 注册成功和重复注册失败都要记录。
+- 密码找回请求、重置成功和无效 token 失败都要记录；响应不得泄露账号是否存在。
 - 权限拒绝要记录操作人、缺失权限、请求 IP、User-Agent。
 - 商品创建、商品修改、SKU 修改、上下架、库存调整、库存预留要记录操作人、对象和原因/参数。
 - 购物车写操作、订单创建、取消、模拟支付、支付超时关闭要记录操作人、对象、状态事件和原因。

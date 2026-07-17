@@ -50,6 +50,7 @@ Android：
 
 API：
 
+- 账号认证：用户/商家/管理员分端注册、按 `account_type` 登录、按账号类型找回密码。
 - 公开浏览：`GET /api/v1/categories`、`GET /api/v1/brands`、`GET /api/v1/products`、`GET /api/v1/products/{id}`。
 - 商家商品：`POST /api/v1/merchant/products`、上下架、SKU 修改。
 - 商家库存：`GET /api/v1/merchant/inventory`、库存调整、幂等库存预留。
@@ -65,15 +66,27 @@ API：
 
 Web：
 
+- 用户登录/注册/找回密码：`/login`、`/register`、`/forgot-password`
 - 用户商品浏览：`/products`
 - 用户商品详情：`/products/northstar-x1`
 - 用户购物车：`/cart`
 - 用户结算：`/checkout`
 - 用户订单：`/orders`、`/orders/order-20260716001`
 - 用户售后：`/after-sales`、`/after-sales/as-20260716001`
+- 商家登录/注册/找回密码：`/merchant/login`、`/merchant/register`、`/merchant/forgot-password`
 - 商家商品管理：`/merchant/products`
 - 商家售后处理：`/merchant/after-sales`
+- 管理员登录/邀请注册/找回密码：`/admin/login`、`/admin/register`、`/admin/forgot-password`
 - 管理员客服工单：`/admin/work-orders`
+
+本地 Web 默认调用 `http://localhost:8000/api/v1`。如果 API 地址不同，可在启动 Web 前设置：
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1 npm run dev
+```
+
+本地管理员邀请注册默认邀请码为 `local-admin-invite-code`，生产环境必须通过
+`ADMIN_REGISTRATION_INVITE_CODE` 配置为独立密钥。
 
 当前商品审核策略：平台审核工作流暂不实现，商家调用 publish 后商品直接公开可售。后续阶段会补平台运营审核和违规下架工作台。
 
