@@ -38,6 +38,18 @@ class UserRole(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utc_now)
 
 
+class PasswordResetToken(SQLModel, table=True):
+    __tablename__ = "password_reset_tokens"
+
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    user_id: UUID = Field(foreign_key="users.id", index=True)
+    account_type: AccountType = Field(index=True)
+    token_hash: str = Field(index=True, unique=True, max_length=64)
+    expires_at: datetime = Field(index=True)
+    consumed_at: datetime | None = Field(default=None, index=True)
+    created_at: datetime = Field(default_factory=utc_now, index=True)
+
+
 class AuditLog(SQLModel, table=True):
     __tablename__ = "audit_logs"
 

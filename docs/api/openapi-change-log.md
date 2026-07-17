@@ -1,5 +1,33 @@
 # OpenAPI Change Log
 
+## 2026-07-17 - Account Registration And Password Recovery
+
+新增分端注册接口：
+
+- `POST /api/v1/auth/register/customer`
+- `POST /api/v1/auth/register/merchant`
+- `POST /api/v1/auth/register/admin`
+
+新增密码找回接口：
+
+- `POST /api/v1/auth/password/forgot`
+- `POST /api/v1/auth/password/reset`
+
+兼容性与权限：
+
+- `POST /api/v1/auth/register` 保留为普通用户注册兼容入口，仍禁止传入额外 `account_type` 字段。
+- 用户注册固定创建 `customer` 账号并分配 `customer` 角色。
+- 商家注册固定创建 `merchant` 账号，自动生成商家数据范围并分配 `merchant_owner` 角色。
+- 管理员注册固定创建 `admin` 账号，必须提供 `ADMIN_REGISTRATION_INVITE_CODE`，且只允许平台运营、客服、客服主管、风控、财务、技术管理员和只读审计等受限角色；`admin_super` 不允许公开注册。
+- 登录和密码找回均要求显式 `account_type`，同一邮箱只能匹配对应端侧账号，不能跨用户端、商家端、管理员端复用凭证。
+
+安全与审计：
+
+- 新增 `password_reset_tokens` 表保存一次性重置 token 的哈希、账号类型、过期时间和消费时间。
+- `forgot` 响应统一返回 accepted，不暴露账号是否存在；非生产环境可返回 `reset_token` 方便本地联调。
+- `reset` token 单次使用，过期或账号类型不匹配时返回统一失败。
+- 注册、登录、找回请求和重置成功/失败均写入审计日志。
+
 ## 2026-07-16 - M4 After-Sales Merchant Admin
 
 新增用户售后接口：

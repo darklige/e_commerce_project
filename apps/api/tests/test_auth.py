@@ -45,6 +45,104 @@ def test_customer_register_login_and_read_me(client: TestClient) -> None:
     assert response.json()["email"] == "buyer@example.com"
 
 
+def test_role_specific_registration_and_console_access(
+    client: TestClient,
+    session: Session,
+) -> None:
+    customer_response = client.post(
+        "/api/v1/auth/register/customer",
+        json={
+            "email": "buyer-v2@example.com",
+            "password": "StrongerPass123!",
+            "display_name": "Buyer V2",
+        },
+    )
+    assert customer_response.status_code == 201
+    assert customer_response.json()["console"] == "customer"
+    assert customer_response.json()["user"]["account_type"] == "customer"
+
+    merchant_response = client.post(
+        "/api/v1/auth/register/merchant",
+        json={
+            "email": "merchant-signup@example.com",
+            "password": "StrongerPass123!",
+            "display_name": "Merchant Signup",
+            "shop_name": "Northstar 演示店",
+        },
+    )
+    assert merchant_response.status_code == 201
+    assert merchant_response.json()["console"] == "merchant"
+    assert merchant_response.json()["user"]["account_type"] == "merchant"
+    assert merchant_response.json()["merchant_ids"]
+    merchant_token = login(
+        client,
+        "merchant-signup@example.com",
+        "StrongerPass123!",
+        "merchant",
+    )
+    assert (
+        client.get(
+            "/api/v1/auth/merchant/me",
+            headers={"Authorization": f"Bearer {merchant_token}"},
+        ).status_code
+        == 200
+    )
+    assert (
+        client.get(
+            "/api/v1/auth/admin/me",
+            headers={"Authorization": f"Bearer {merchant_token}"},
+        ).status_code
+        == 403
+    )
+
+    forbidden_admin = client.post(
+        "/api/v1/auth/register/admin",
+        json={
+            "email": "admin-signup@example.com",
+            "password": "StrongerPass123!",
+            "display_name": "Admin Signup",
+            "invite_code": "wrong-code",
+            "role": "admin_customer_service",
+        },
+    )
+    assert forbidden_admin.status_code == 403
+
+    admin_response = client.post(
+        "/api/v1/auth/register/admin",
+        json={
+            "email": "admin-signup@example.com",
+            "password": "StrongerPass123!",
+            "display_name": "Admin Signup",
+            "invite_code": "local-admin-invite-code",
+            "role": "admin_customer_service",
+        },
+    )
+    assert admin_response.status_code == 201
+    assert admin_response.json()["console"] == "admin"
+    admin_token = login(client, "admin-signup@example.com", "StrongerPass123!", "admin")
+    assert (
+        client.get(
+            "/api/v1/auth/admin/me",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        ).status_code
+        == 200
+    )
+    assert (
+        client.get(
+            "/api/v1/auth/merchant/me",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        ).status_code
+        == 403
+    )
+
+    audit_logs = session.exec(select(AuditLog).where(AuditLog.action == "auth.register")).all()
+    assert any(
+        log.resource_type == "merchant_user" and log.outcome == "success"
+        for log in audit_logs
+    )
+    assert any(log.resource_type == "admin_user" and log.outcome == "success" for log in audit_logs)
+
+
 def test_register_rejects_duplicate_email(client: TestClient) -> None:
     register_customer(client)
 
@@ -72,6 +170,79 @@ def test_register_rejects_extra_account_type(client: TestClient) -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_password_reset_is_account_type_scoped_and_single_use(
+    client: TestClient,
+    session: Session,
+) -> None:
+    register_customer(client)
+
+    wrong_type = client.post(
+        "/api/v1/auth/password/forgot",
+        json={"email": "buyer@example.com", "account_type": "merchant"},
+    )
+    assert wrong_type.status_code == 200
+    assert wrong_type.json()["reset_token"] is None
+
+    forgot_response = client.post(
+        "/api/v1/auth/password/forgot",
+        json={"email": "buyer@example.com", "account_type": "customer"},
+    )
+    assert forgot_response.status_code == 200
+    reset_token = forgot_response.json()["reset_token"]
+    assert reset_token
+
+    invalid_reset = client.post(
+        "/api/v1/auth/password/reset",
+        json={
+            "email": "buyer@example.com",
+            "account_type": "merchant",
+            "reset_token": reset_token,
+            "new_password": "NewStrongerPass123!",
+        },
+    )
+    assert invalid_reset.status_code == 400
+
+    reset_response = client.post(
+        "/api/v1/auth/password/reset",
+        json={
+            "email": "buyer@example.com",
+            "account_type": "customer",
+            "reset_token": reset_token,
+            "new_password": "NewStrongerPass123!",
+        },
+    )
+    assert reset_response.status_code == 200
+
+    old_login = client.post(
+        "/api/v1/auth/login",
+        json={
+            "email": "buyer@example.com",
+            "password": "StrongerPass123!",
+            "account_type": "customer",
+        },
+    )
+    assert old_login.status_code == 401
+    assert login(client, "buyer@example.com", "NewStrongerPass123!", "customer")
+
+    reused_reset = client.post(
+        "/api/v1/auth/password/reset",
+        json={
+            "email": "buyer@example.com",
+            "account_type": "customer",
+            "reset_token": reset_token,
+            "new_password": "AnotherStrongerPass123!",
+        },
+    )
+    assert reused_reset.status_code == 400
+
+    audit_logs = session.exec(select(AuditLog)).all()
+    assert any(log.action == "auth.password_reset_request" for log in audit_logs)
+    assert any(
+        log.action == "auth.password_reset" and log.outcome == "success"
+        for log in audit_logs
+    )
 
 
 def test_invalid_login_writes_audit_log(client: TestClient, session: Session) -> None:
