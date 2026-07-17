@@ -79,7 +79,9 @@ Web：
 - 管理员登录/邀请注册/找回密码：`/admin/login`、`/admin/register`、`/admin/forgot-password`
 - 管理员客服工单：`/admin/work-orders`
 
-本地 Web 默认调用 `http://localhost:8000/api/v1`。如果 API 地址不同，可在启动 Web 前设置：
+本地 Web 未设置 `NEXT_PUBLIC_API_BASE_URL` 时，会按当前页面 hostname 自动调用
+`http://<当前 hostname>:8000/api/v1`，避免 `localhost` 和 `127.0.0.1`
+混用导致浏览器 CORS 拦截。如果 API 地址不同，可在启动 Web 前设置：
 
 ```bash
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1 npm run dev

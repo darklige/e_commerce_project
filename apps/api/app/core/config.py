@@ -3,12 +3,25 @@ from functools import lru_cache
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+DEFAULT_CORS_ORIGINS = ",".join(
+    [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "http://localhost:3002",
+        "http://127.0.0.1:3002",
+        "http://localhost:3007",
+        "http://127.0.0.1:3007",
+    ]
+)
+
 
 class Settings(BaseSettings):
     app_name: str = "Commerce Platform API"
     app_env: str = "local"
     app_version: str = "0.1.0"
-    api_cors_origins: str = "http://localhost:3000"
+    api_cors_origins: str = DEFAULT_CORS_ORIGINS
     allowed_hosts: str = "localhost,127.0.0.1,0.0.0.0,testserver"
     jwt_secret_key: str = "change-this-local-development-secret"
     jwt_algorithm: str = "HS256"

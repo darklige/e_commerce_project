@@ -22,7 +22,7 @@ services:
     environment:
       APP_ENV: docker
       DATABASE_URL: postgresql+psycopg://commerce:commerce@postgres:5432/commerce
-      API_CORS_ORIGINS: http://localhost:3000
+      API_CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
     ports:
       - "8000:8000"
     depends_on:
